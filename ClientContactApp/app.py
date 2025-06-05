@@ -2,11 +2,14 @@ from flask import Flask
 from models import db
 from routes.client import client_bp
 from routes.contact import contact_bp
+from routes import register_blueprints
 
 def create_app():
     app = Flask(__name__)
     app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///db.sqlite3'
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+
+    register_blueprints(app)
 
     db.init_app(app)
 

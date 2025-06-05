@@ -1,9 +1,16 @@
-from flask import Blueprint, request, render_template, redirect, url_for, jsonify
+from flask import Blueprint, request, render_template, redirect, url_for, flash, jsonify
 from models import db
 from models.client import Client
 from models.contact import Contact
+import re   #for email validation
 
 contact_bp = Blueprint('contact', __name__, url_prefix='/contacts')
+
+#simple validation rule for email
+def is_valid_email(email):
+    # Simple regex for demonstration
+    pattern = r"^[\w\.-]+@[\w\.-]+\.\w+$"
+    return re.match(pattern, email)
 
 @contact_bp.route('/')
 def list_contacts():
@@ -16,6 +23,12 @@ def create_contact():
         name = request.form['name'].strip()
         surname = request.form['surname'].strip()
         email = request.form['email'].strip()
+
+        # : Email format validation ---
+        if not is_valid_email(email):
+            flash('Invalid email address.', 'error')
+            return render_template('contact_form.html')
+        
         if not name or not surname or not email:
             return render_template('contact_form.html', error="All fields are required.")
         # Email uniqueness check

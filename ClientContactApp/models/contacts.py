@@ -7,7 +7,7 @@ class Contact(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String, nullable=False)
     surname = db.Column(db.String, nullable=False)
-    email = db.Column(db.String, nullable=False, unique=True)
+    email = db.Column(db.String, nullable=False, unique=True) # <-- This will make sure the email is unique!
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
     clients = db.relationship(

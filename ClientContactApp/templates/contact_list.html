@@ -7,16 +7,14 @@
         <th>Name</th>
         <th>Surname</th>
         <th>Email</th>
-        <th>Created At</th>
-        <th>Actions</th>
+        <th> <!-- No heading--></th>
     </tr>
     {% for contact in contacts %}
     <tr>
         <td>{{ contact.name }}</td>
         <td>{{ contact.surname }}</td>
         <td>{{ contact.email }}</td>
-        <td>{{ contact.created_at.strftime('%Y-%m-%d %H:%M') }}</td>
-        <td>
+        <td align="center">
             <a href="{{ url_for('contact.view_contact', contact_id=contact.id) }}">View</a>
         </td>
     </tr>

@@ -13,7 +13,7 @@
     <tr>
         <td>{{ client.name }}</td>
         <td>{{ client.client_code }}</td>
-        <td>{{ client.created_at.strftime('%Y-%m-%d %H:%M') }}</td>
+        <td align="right">{{ client.created_at.strftime('%Y-%m-%d %H:%M') }}</td>
         <td>
             <a href="{{ url_for('client.view_client', client_id=client.id) }}">View</a>
         </td>

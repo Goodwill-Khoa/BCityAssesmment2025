@@ -48,7 +48,7 @@ def link_contact(client_id):
     contact_id = request.form['contact_id']
     contact = Contact.query.get(contact_id)
     if not contact:
-        return jsonify({'success': False, 'message': 'Contact not found.'}), 404
+        return jsonify({'success': False, 'message': 'No Contact(s) found.'}), 404
     if contact not in client.contacts:
         client.contacts.append(contact)
         db.session.commit()
