@@ -15,6 +15,8 @@ pip install -r requirements.
 pip install flask flask_sqlalchemy
 export FLASK_APP=app:create_app
 
+from powershell
+$env:FLASK_APP = "app.py"
 flask run
 ```
 

@@ -2,29 +2,40 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>ClientContactApp</title>
+    <title>Client Contact App</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- Google Fonts for modern look -->
+    <link href="https://fonts.googleapis.com/css?family=Roboto:400,700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 </head>
 <body>
-    <header>
-        <h1>ClientContactApp</h1>
-        <nav>
-            <a href="{{ url_for('client.list_clients') }}">Clients</a> |
-            <a href="{{ url_for('contact.list_contacts') }}">Contacts</a>
-        </nav>
-    </header>
-    <main>
-        {% with messages = get_flashed_messages() %}
-          {% if messages %}
-            <ul class="flashes">
-              {% for message in messages %}
-                <li>{{ message }}</li>
-              {% endfor %}
-            </ul>
-          {% endif %}
-        {% endwith %}
-        {% block content %}{% endblock %}
-    </main>
+    <div class="container">
+        <!-- Logo/Image -->
+        <img src="https://www.bcity.me/web/image/website/1/logo?unique=71ef289" alt="B City Logo" class="logo-img" />
+
+        <!-- Heading -->
+        <header>
+            <h1>Client Contact App</h1>
+            <nav>
+                <a href="{{ url_for('client.list_clients') }}" class="nav-link">Clients</a>
+                <a href="{{ url_for('contact.list_contacts') }}" class="nav-link">Contacts</a>
+                <a href="{{ url_for('index') }}" class="nav-link">Home</a>
+            </nav>
+        </header>
+        
+        <main>
+            {% with messages = get_flashed_messages() %}
+              {% if messages %}
+                <ul class="flashes">
+                  {% for message in messages %}
+                    <li>{{ message }}</li>
+                  {% endfor %}
+                </ul>
+              {% endif %}
+            {% endwith %}
+            {% block content %}{% endblock %}
+        </main>
+    </div>
 </body>
 </html>

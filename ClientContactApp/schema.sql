@@ -3,7 +3,7 @@ CREATE TABLE IF NOT EXISTS client (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     name TEXT NOT NULL,
     client_code TEXT NOT NULL UNIQUE,
-    created_at DATETIME DEFAULT CURRENT_TIMESTAMP  --login information 
+    --created_at DATETIME DEFAULT CURRENT_TIMESTAMP  --login information 
 );
 
 -- Contact Table
@@ -12,7 +12,7 @@ CREATE TABLE IF NOT EXISTS contact (
     name TEXT NOT NULL,
     surname TEXT NOT NULL,
     email TEXT NOT NULL UNIQUE,
-    created_at DATETIME DEFAULT CURRENT_TIMESTAMP  --login information 
+   -- created_at DATETIME DEFAULT CURRENT_TIMESTAMP  --login information 
 );
 
 -- Link Table for Many-to-Many Relationship

@@ -1,51 +1,85 @@
 {% extends 'base.html' %}
 {% block content %}
-<h2>Client: {{ client.name }}</h2>
-<p><b>Client Code:</b> {{ client.client_code }}</p>
-<p><b>Created At:</b> {{ client.created_at.strftime('%Y-%m-%d %H:%M') }}</p>
-<hr>
-<h3>Linked Contacts</h3>
-{% if contacts %}
-<table border="1">
-    <tr>
-        <th>Full Name</th>
-        <th>Email</th>
-        <th>Action</th>
-    </tr>
-    {% for contact in contacts %}
-    <tr id="contact-row-{{ contact.id }}">
-        <td>{{ contact.name }} {{ contact.surname }}</td>
-        <td>{{ contact.email }}</td>
-        <td>
-            <button class="unlink-btn" data-contact-id="{{ contact.id }}">Unlink</button>
-        </td>
-    </tr>
-    {% endfor %}
-</table>
-{% else %}
-<p>No Contacts found</p>
-{% endif %}
-<hr>
-<h3>Link New Contact</h3>
-<form id="link-contact-form">
-    <select name="contact_id" id="contact_id">
-        <option value="">-- Select Contact --</option>
-        {% for contact in Contact.query.all() if contact not in contacts %}
-        <option value="{{ contact.id }}">{{ contact.name }} {{ contact.surname }} ({{ contact.email }})</option>
+<div class="container">
+    <div class="action-bar">
+        <form id="search-client-form" class="inline-form" style="margin-bottom:12px;">
+            <input type="text" id="search-client-input" name="name" placeholder="Search client by name..." class="input-select" required>
+            <button type="submit" class="btn">Search</button>
+        </form>
+        <span id="search-msg" style="color:#e74c3c; font-weight:500;"></span>
+        <a href="{{ url_for('client.create_client') }}" class="btn">Create Client</a>
+        <a href="{{ url_for('client.view_client', client_id=client.id) }}" class="btn">View Client</a>
+        <a href="{{ url_for('client.list_clients') }}" class="btn">View Linked Clients</a>
+    </div>
+
+    <div class="detail-section">
+        <h2>Client: {{ client.name }}</h2>
+        <p><b>Client Code:</b> {{ client.client_code }}</p>
+    </div>
+
+    <hr style="margin: 24px 0;">
+
+    <h3>Linked Contacts</h3>
+    {% if contacts %}
+    <table class="modern-table">
+        <tr>
+            <th>Full Name</th>
+            <th>Email</th>
+            <th><!-- No heading--></th>
+        </tr>
+        {% for contact in contacts %}
+        <tr id="contact-row-{{ contact.id }}">
+            <td>{{ contact.name }} {{ contact.surname }}</td>
+            <td>{{ contact.email }}</td>
+            <td>
+                <button class="btn btn-danger unlink-btn" data-contact-id="{{ contact.id }}">Unlink</button>
+            </td>
+        </tr>
         {% endfor %}
-    </select>
-    <button type="submit">Link</button>
-</form>
+    </table>
+    {% else %}
+    <p>No Contacts found</p>
+    {% endif %}
+
+    <hr style="margin: 24px 0;">
+
+    <h3>Link New Contact</h3>
+    <form id="link-contact-form" class="inline-form">
+        <select name="contact_id" id="contact_id" class="input-select">
+            <option value="">-- Select Contact --</option>
+            {% for contact in available_contacts %}
+            <option value="{{ contact.id }}">{{ contact.name }} {{ contact.surname }} ({{ contact.email }})</option>
+            {% endfor %}
+        </select>
+        <button type="submit" class="btn">Link</button>
+    </form>
+</div>
 <script>
 $(function() {
+    // SEARCH CLIENT AJAX
+    $('#search-client-form').submit(function(e) {
+        e.preventDefault();
+        $('#search-msg').text('');
+        var name = $('#search-client-input').val().trim();
+        if (!name) return;
+        $.post('{{ url_for("client.search_client") }}', {name: name}, function(resp) {
+            if (resp.success) {
+                window.location.href = "/clients/" + resp.client_id;
+            } else {
+                $('#search-msg').text(resp.message);
+            }
+        });
+    });
+
     // Unlink contact AJAX
     $('.unlink-btn').click(function() {
         var cid = $(this).data('contact-id');
         $.post('{{ url_for("client.unlink_contact", client_id=client.id) }}', {contact_id: cid}, function(resp) {
             if (resp.success)
-                $('#contact-row-' + cid).remove();
+                $('#contact-row-' + cid).fadeOut(300, function() { $(this).remove(); });
         });
     });
+
     // Link contact AJAX
     $('#link-contact-form').submit(function(e) {
         e.preventDefault();

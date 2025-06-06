@@ -5,18 +5,18 @@ class Client(db.Model):
     __tablename__ = 'client'
 
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String, nullable=False)
-    client_code = db.Column(db.String, nullable=False, unique=True)
-    created_at = db.Column(db.DateTime, default=datetime.utcnow)
-
+    name = db.Column(db.String(100), nullable=False)
+    client_code = db.Column(db.String(50), nullable=False, unique=True)
+    
     contacts = db.relationship(
         'Contact',
         secondary='client_contact',
         back_populates='clients'
     )
-
-    def __init__(self, name):
-        self.name = name
+    # generated error on the sample SQLAlchemy will auto assign
+   # def __init__(self, name, client_code):
+      #  self.name = name
+      #  self.client_code = client_code
         # client_code will be set after uniqueness check in service/controller
 
     @staticmethod

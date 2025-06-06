@@ -40,7 +40,14 @@ def create_client():
 def view_client(client_id):
     client = Client.query.get_or_404(client_id)
     linked_contacts = client.contacts
-    return render_template('client_detail.html', client=client, contacts=linked_contacts)
+        # Get all contacts *not* already linked to this client
+    available_contacts = Contact.query.filter(~Contact.clients.any(id=client.id)).all()
+    return render_template(
+        'client_detail.html',
+        client=client,
+        contacts=linked_contacts,
+        available_contacts=available_contacts
+    )
 
 @client_bp.route('/<int:client_id>/link_contact', methods=['POST'])
 def link_contact(client_id):
@@ -63,3 +70,12 @@ def unlink_contact(client_id):
         client.contacts.remove(contact)
         db.session.commit()
     return jsonify({'success': True})
+
+@client_bp.route('/search', methods=['POST'])
+def search_client():
+    name = request.form.get('name', '').strip()
+    client = Client.query.filter(Client.name.ilike(name)).first()
+    if client:
+        return jsonify({'success': True, 'client_id': client.id})
+    else:
+        return jsonify({'success': False, 'message': 'No Client Found'})
