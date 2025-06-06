@@ -3,37 +3,44 @@
 {% block title %}Linked Clients{% endblock %}
 
 {% block content %}
-<h1>Linked Clients</h1>
+<div class="container">
+    <h1>Linked Clients</h1>
 
-{% with messages = get_flashed_messages(with_categories=true) %}
-  {% if messages %}
-    <ul>
-      {% for category, message in messages %}
-        <li class="{{ category }}">{{ message }}</li>
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        <ul>
+          {% for category, message in messages %}
+            <li class="{{ category }}">{{ message }}</li>
+          {% endfor %}
+        </ul>
+      {% endif %}
+    {% endwith %}
+
+    {% if clients and clients|length > 0 %}
+    <table class="table table-bordered">
+      <thead>
+        <tr>
+          <th style="text-align:left;">Client Name</th>
+          <th style="text-align:left;">Client Code</th>
+          <th style="text-align:left;"></th>
+        </tr>
+      </thead>
+      <tbody>
+      {% for client in clients %}
+      <tr>
+        <td style="text-align:left;">{{ client.name }}</td>
+        <td style="text-align:left;">{{ client.client_code }}</td>
+        <td style="text-align:left;">
+          <a href="{{ url_for('client.unlink_client', client_id=client.id) }}" class="btn btn-sm btn-danger">Unlink</a>
+        </td>
+      </tr>
       {% endfor %}
-    </ul>
-  {% endif %}
-{% endwith %}
-
-{% if clients %}
-<table>
-  <tr>
-    <th style="text-align:left;">Client Name</th>
-    <th style="text-align:left;">Client Code</th>
-    <th style="text-align:left;"> <!-- No headings here--> ></th>
-  </tr>
-  {% for client in clients %}
-  <tr>
-    <td style="text-align:left;">{{ client.name }}</td>
-    <td style="text-align:left;">{{ client.code }}</td>
-    <td style="text-align:left;">
-      <a href="{{ url_for('client.unlink_client', client_id=client.id) }}">Unlink</a>
-    </td>
-  </tr>
-  {% endfor %}
-</table>
-{% else %}
-  <p style="color: red;">No contact(s) found for empty links or clients.</p>
-{% endif %}
-
+      </tbody>
+    </table>
+    {% else %}
+      <div class="alert alert-warning" style="color: red;">
+        No contact(s) found for empty links or clients.
+      </div>
+    {% endif %}
+</div>
 {% endblock %}

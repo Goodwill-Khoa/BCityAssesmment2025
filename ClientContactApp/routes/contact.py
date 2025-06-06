@@ -67,3 +67,21 @@ def unlink_client(contact_id):
         contact.clients.remove(client)
         db.session.commit()
     return jsonify({'success': True})
+
+@contact_bp.route('/ajax/link_unlink_client', methods=['POST'])
+def link_unlink_client_ajax():
+    contact_id = request.form.get('contact_id')
+    client_id = request.form.get('client_id')
+    action = request.form.get('action')
+    contact = Contact.query.get(contact_id)
+    client = Client.query.get(client_id)
+    if not contact or not client:
+        return jsonify(success=False)
+    if action == "link":
+        if client not in contact.clients:
+            contact.clients.append(client)
+    elif action == "unlink":
+        if client in contact.clients:
+            contact.clients.remove(client)
+    db.session.commit()
+    return jsonify(success=True)
