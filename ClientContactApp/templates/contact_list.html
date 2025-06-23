@@ -1,23 +1,27 @@
 {% extends 'base.html' %}
 {% block content %}
 <h2>Contacts</h2>
-<a href="{{ url_for('contact.create_contact') }}">Add New Contact</a>
-<table border="1">
-    <tr>
-        <th>Name</th>
-        <th>Surname</th>
-        <th>Email</th>
-        <th> <!-- No heading--></th>
-    </tr>
-    {% for contact in contacts %}
-    <tr>
-        <td>{{ contact.name }}</td>
-        <td>{{ contact.surname }}</td>
-        <td>{{ contact.email }}</td>
-        <td align="center">
-            <a href="{{ url_for('contact.view_contact', contact_id=contact.id) }}">View</a>
-        </td>
-    </tr>
-    {% endfor %}
+<a href="{{ url_for('contact.create_contact') }}" class="btn btn-success mb-2">Add New Contact</a>
+<table class="table custom-compact-table">
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Surname</th>
+            <th>Email</th>
+            <th><!-- No heading --></th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for contact in contacts %}
+        <tr>
+            <td>{{ contact.name }}</td>
+            <td>{{ contact.surname }}</td>
+            <td>{{ contact.email }}</td>
+            <td align="center">
+                <a href="{{ url_for('contact.view_contact', contact_id=contact.id) }}" class="btn btn-sm btn-primary">View</a>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
 </table>
 {% endblock %}
