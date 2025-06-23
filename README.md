@@ -11,6 +11,7 @@ A basic Flask app for managing clients and contacts, with many-to-many relations
 ```bash
 python3 -m venv venv
 source venv/bin/activate
+windows venv\Scripts\activate
 pip install -r requirements.
 pip install flask flask_sqlalchemy
 export FLASK_APP=app:create_app

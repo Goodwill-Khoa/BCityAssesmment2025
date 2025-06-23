@@ -11,9 +11,9 @@ with app.app_context():
     db.create_all()
 
     # Sample Clients
-    client1 = Client(name='Acme Corporation', client_code='ACME')
-    client2 = Client(name='Globex Inc.', client_code='GLOBEX')
-    client3 = Client(name='Initech', client_code='INITECH')
+    client1 = Client(name='Acme Corporation', client_code='ACA001')
+    client2 = Client(name='Globex Inc.', client_code='GIA001')
+    client3 = Client(name='Initech', client_code='INI001')
     db.session.add_all([client1, client2, client3])
     db.session.commit()
 
