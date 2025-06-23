@@ -1,0 +1,10 @@
+{% extends 'base.html' %}
+{% block content %}
+<h2>Admin Dashboard</h2>
+<ul>
+        <li><a href="{{ url_for('admin.user_manage') }}">Manage Users</a></li>
+        <li><a href="{{ url_for('admin.update_database', db='client') }}">Manage Clients</a></li>
+        <li><a href="{{ url_for('admin.update_database', db='contact') }}">Manage Contacts</a></li>
+</ul>
+
+{% endblock %}

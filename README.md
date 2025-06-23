@@ -14,6 +14,9 @@ source venv/bin/activate
 windows venv\Scripts\activate
 pip install -r requirements.
 pip install flask flask_sqlalchemy
+pip install flask-login
+pip install flask-wtf
+pip install wtforms
 export FLASK_APP=app:create_app
 
 from powershell

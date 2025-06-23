@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="alert alert-warning">
+    <strong>Warning!</strong>
+    {% if type == 'Database' %}
+        You are about to <b>DROP the entire database</b> (Phase {{ phase }} of 2).
+    {% else %}
+        You are about to delete {{ type }} 
+        <b>
+            {% if obj %}
+                {{ obj.username if obj.username is defined else obj.name if obj.name is defined else "" }}
+            {% endif %}
+        </b>.
+        This action is irreversible.
+    {% endif %}
+</div>
+<form method="POST">
+    {% if form is defined %}{{ form.hidden_tag() }}{% endif %}
+    {% if type == 'Database' and phase == 2 %}
+        <input type="hidden" name="phase" value="2">
+    {% endif %}
+    <button type="submit" class="btn btn-danger">Confirm Delete</button>
+    <a href="{{ url_for('admin.admin_dashboard') }}" class="btn btn-secondary">Cancel</a>
+</form>
+{% endblock %}
