@@ -1,38 +1,46 @@
 {% extends "base.html" %}
 {% block content %}
-<h2>Update Database</h2>
-<form method="get" action="{{ url_for('admin.update_database') }}">
-  <button name="db" value="contact" type="submit" {% if db_choice == 'contact' %}disabled{% endif %}>Contact DB</button>
-  <button name="db" value="client" type="submit" {% if db_choice == 'client' %}disabled{% endif %}>Client DB</button>
-</form>
-{% if db_choice %}
-  <h3>{{ db_choice|capitalize }} Table</h3>
-  {% if records and columns %}
-  <table border="1">
-    <tr>
-      {% for col in columns %}
-        <th>{{ col }}</th>
-      {% endfor %}
-      <th>Actions</th>
-    </tr>
-    {% for record in records %}
-    <tr>
-      <form method="post" action="{{ url_for('admin.update_delete_record', model_name=db_choice, record_id=record.id) }}">
-        {% for col in columns %}
-        <td>
-          <input name="{{ col }}" value="{{ record | attribute(col) }}" {% if col == 'id' %}readonly{% endif %}>
-        </td>
-        {% endfor %}
-        <td>
-          <button name="action" value="update" type="submit">Update</button>
-          <button name="action" value="delete" type="submit" onclick="return confirm('Delete this record?');">Delete</button>
-        </td>
-      </form>
-    </tr>
-    {% endfor %}
-  </table>
-  {% else %}
-    <p>No records found.</p>
-  {% endif %}
-{% endif %}
+<div class="container">
+    <h2 class="mb-4">Update Database</h2>
+    <form method="get" action="{{ url_for('admin.update_database') }}" class="d-flex gap-2 mb-4">
+        <button name="db" value="contact" type="submit" class="btn btn-outline-primary {% if db_choice == 'contact' %}active{% endif %}" {% if db_choice == 'contact' %}disabled{% endif %}>Contact DB</button>
+        <button name="db" value="client" type="submit" class="btn btn-outline-primary {% if db_choice == 'client' %}active{% endif %}" {% if db_choice == 'client' %}disabled{% endif %}>Client DB</button>
+    </form>
+    {% if db_choice %}
+        <h3 class="mb-3">{{ db_choice|capitalize }} Table</h3>
+        {% if records and columns %}
+        <div class="table-responsive">
+            <table class="table custom-compact-table align-middle">
+                <thead>
+                    <tr>
+                    {% for col in columns %}
+                        <th>{{ col|capitalize }}</th>
+                    {% endfor %}
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                {% for record in records %}
+                <tr>
+                    <form method="post" action="{{ url_for('admin.update_delete_record', model_name=db_choice, record_id=record.id) }}">
+                        {% for col in columns %}
+                        <td>
+                            <input name="{{ col }}" value="{{ record | attribute(col) }}" class="form-control form-control-sm" {% if col == 'id' %}readonly{% endif %}>
+                        </td>
+                        {% endfor %}
+                        <td>
+                            <button name="action" value="update" type="submit" class="btn btn-sm btn-success me-1">Update</button>
+                            <button name="action" value="delete" type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Delete this record?');">Delete</button>
+                        </td>
+                    </form>
+                </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+            <div class="alert alert-warning">No records found.</div>
+        {% endif %}
+    {% endif %}
+</div>
 {% endblock %}

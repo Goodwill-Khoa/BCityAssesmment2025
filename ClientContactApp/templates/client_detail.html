@@ -1,58 +1,65 @@
 {% extends 'base.html' %}
 {% block content %}
 <div class="container">
-    <div class="action-bar">
-        <form id="search-client-form" class="inline-form" style="margin-bottom:12px;">
-            <input type="text" id="search-client-input" name="name" placeholder="Search client by name..." class="input-select" required>
-            <button type="submit" class="btn">Search</button>
+    <div class="d-flex flex-wrap gap-2 mb-3 align-items-center">
+        <!-- Search Client by any detail -->
+        <form id="search-client-form" class="d-flex gap-2 flex-wrap" style="margin-bottom:0;">
+            <input type="text" id="search-client-input" name="query" placeholder="Search client by name, code, or email..." class="form-control" required>
+            <button type="submit" class="btn btn-primary">Search</button>
         </form>
-        <span id="search-msg" style="color:#e74c3c; font-weight:500;"></span>
-        <a href="{{ url_for('client.create_client') }}" class="btn">Create Client</a>
-        <a href="{{ url_for('client.view_client', client_id=client.id) }}" class="btn">View Client</a>
-        <a href="{{ url_for('client.list_clients') }}" class="btn">View Linked Clients</a>
+        <span id="search-msg" class="ms-2 text-danger fw-semibold"></span>
+        <a href="{{ url_for('client.create_client') }}" class="btn btn-success ms-auto">Create Client</a>
+        <a href="{{ url_for('client.view_client', client_id=client.id) }}" class="btn btn-info">View Client</a>
+        <a href="{{ url_for('client.list_clients') }}" class="btn btn-secondary">View All Clients</a>
     </div>
 
-    <div class="detail-section">
+    <div class="mb-4">
         <h2>Client: {{ client.name }}</h2>
         <p><b>Client Code:</b> {{ client.client_code }}</p>
     </div>
 
-    <hr style="margin: 24px 0;">
-
     <h3>Linked Contacts</h3>
     {% if contacts %}
-    <table class="modern-table">
-        <tr>
-            <th>Full Name</th>
-            <th>Email</th>
-            <th><!-- No heading--></th>
-        </tr>
+    <table class="table custom-compact-table" id="contactsTable">
+        <thead>
+            <tr>
+                <th>Full Name</th>
+                <th>Email</th>
+                <th><!-- No heading --></th>
+            </tr>
+        </thead>
+        <tbody>
         {% for contact in contacts %}
         <tr id="contact-row-{{ contact.id }}">
             <td>{{ contact.name }} {{ contact.surname }}</td>
             <td>{{ contact.email }}</td>
             <td>
-                <button class="btn btn-danger unlink-btn" data-contact-id="{{ contact.id }}">Unlink</button>
+                <a href="#"
+                    class="btn btn-sm btn-danger unlink-btn"
+                    data-contact-id="{{ contact.id }}"
+                    data-url="{{ url_for('client.unlink_contact', client_id=client.id) }}">
+                    Unlink
+                </a>
             </td>
         </tr>
         {% endfor %}
+        </tbody>
     </table>
     {% else %}
-    <p>No Contacts found</p>
+    <div class="alert alert-warning">No contacts found.</div>
     {% endif %}
 
-    <hr style="margin: 24px 0;">
-
-    <h3>Link New Contact</h3>
-    <form id="link-contact-form" class="inline-form">
-        <select name="contact_id" id="contact_id" class="input-select">
+    <h3 class="mt-4">Link New Contact</h3>
+    <form id="link-contact-form" class="d-flex gap-2 flex-wrap mb-3">
+        <select name="contact_id" id="contact_id" class="form-select" style="min-width:220px;">
             <option value="">-- Select Contact --</option>
             {% for contact in available_contacts %}
             <option value="{{ contact.id }}">{{ contact.name }} {{ contact.surname }} ({{ contact.email }})</option>
             {% endfor %}
         </select>
-        <button type="submit" class="btn">Link</button>
+        <button type="submit" class="btn btn-success">Link</button>
     </form>
+    <span id="link-msg" class="text-danger fw-semibold"></span>
 </div>
 <script>
 $(function() {
@@ -60,13 +67,13 @@ $(function() {
     $('#search-client-form').submit(function(e) {
         e.preventDefault();
         $('#search-msg').text('');
-        var name = $('#search-client-input').val().trim();
-        if (!name) return;
-        $.post('{{ url_for("client.search_client") }}', {name: name}, function(resp) {
+        var query = $('#search-client-input').val().trim();
+        if (!query) return;
+        $.post('{{ url_for("client.search_client") }}', {query: query}, function(resp) {
             if (resp.success) {
                 window.location.href = "/clients/" + resp.client_id;
             } else {
-                $('#search-msg').text(resp.message);
+                $('#search-msg').text(resp.message || "No client found.");
             }
         });
     });
@@ -77,16 +84,20 @@ $(function() {
         $.post('{{ url_for("client.unlink_contact", client_id=client.id) }}', {contact_id: cid}, function(resp) {
             if (resp.success)
                 $('#contact-row-' + cid).fadeOut(300, function() { $(this).remove(); });
+            else
+                alert(resp.message || "Error unlinking contact.");
         });
     });
 
     // Link contact AJAX
     $('#link-contact-form').submit(function(e) {
         e.preventDefault();
+        $('#link-msg').text('');
         var contact_id = $('#contact_id').val();
         if(contact_id) {
             $.post('{{ url_for("client.link_contact", client_id=client.id) }}', {contact_id: contact_id}, function(resp) {
                 if(resp.success) location.reload();
+                else $('#link-msg').text(resp.message || "Error linking contact.");
             });
         }
     });

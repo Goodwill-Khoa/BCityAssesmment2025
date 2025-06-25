@@ -1,10 +1,17 @@
 {% extends 'base.html' %}
 {% block content %}
-<h2>Admin Dashboard</h2>
-<ul>
-        <li><a href="{{ url_for('admin.user_manage') }}">Manage Users</a></li>
-        <li><a href="{{ url_for('admin.update_database', db='client') }}">Manage Clients</a></li>
-        <li><a href="{{ url_for('admin.update_database', db='contact') }}">Manage Contacts</a></li>
-</ul>
-
+<div class="container">
+    <h2 class="mb-4">Admin Dashboard</h2>
+    <div class="list-group">
+        <a href="{{ url_for('admin.user_manage') }}" class="list-group-item list-group-item-action">
+            Manage Users
+        </a>
+        <a href="{{ url_for('admin.update_database', db='client') }}" class="list-group-item list-group-item-action">
+            Manage Clients
+        </a>
+        <a href="{{ url_for('admin.update_database', db='contact') }}" class="list-group-item list-group-item-action">
+            Manage Contacts
+        </a>
+    </div>
+</div>
 {% endblock %}

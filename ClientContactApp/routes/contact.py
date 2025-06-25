@@ -85,3 +85,17 @@ def link_unlink_client_ajax():
             contact.clients.remove(client)
     db.session.commit()
     return jsonify(success=True)
+
+
+@contact_bp.route('/search', methods=['GET'])
+def search_contact():
+    name = request.args.get('name', '').strip()
+    if not name:
+        return jsonify({'found': False})
+    # Searches by name or surname (case-insensitive)
+    contact = Contact.query.filter(
+        (Contact.name.ilike(f"%{name}%")) | (Contact.surname.ilike(f"%{name}%"))
+    ).first()
+    if contact:
+        return jsonify({'found': True, 'contact_id': contact.id})
+    return jsonify({'found': False})

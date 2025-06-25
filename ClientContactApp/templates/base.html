@@ -17,7 +17,7 @@
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark mb-4">
       <div class="container">
         <a class="navbar-brand d-flex align-items-center" href="{{ url_for('index') }}">
-          <img src="https://www.bcity.me/web/image/website/1/logo?unique=71ef289" alt="B City Logo" width="40" height="40" class="me-2" />
+          <img src="https://www.bcity.me/web/image/website/1/logo?unique=71ef289" alt="B City Logo" width="100" height="40" class="me-2" />
           Client Contact App
         </a>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
@@ -57,6 +57,27 @@
     <!-- Bootstrap JS bundle -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    {% block scripts %}{% endblock %}
+
+
+    {% block scripts %}
+<script>
+$(function() {
+    $(document).on('click', '.unlink-btn', function(e) {
+        e.preventDefault(); // Prevents default <a> behavior
+        var btn = $(this);
+        var client_id = btn.data('client-id');
+        var url = btn.data('url');
+        $.post(url, {client_id: client_id}, function(resp) {
+            if(resp.success) {
+                $('#client-row-' + client_id).fadeOut(300, function(){ $(this).remove(); });
+            } else {
+                alert(resp.message || "Error unlinking.");
+            }
+        });
+    });
+});
+</script>
+{% endblock %}
+
 </body>
 </html>

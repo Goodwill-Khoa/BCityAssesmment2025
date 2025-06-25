@@ -3,23 +3,29 @@
 <div class="container">
     <h2>Clients</h2>
     <a href="{{ url_for('client.create_client') }}" class="btn btn-primary mb-3">Add New Client</a>
+    
+    <!-- Search Bar -->
+    <div class="mb-3">
+        <input type="text" id="clientSearch" class="form-control" placeholder="Search clients by any detail...">
+    </div>
+    
     {% if clients and clients|length > 0 %}
-    <table class="table table-bordered">
+    <table class="table custom-compact-table" id="clientsTable">
         <thead>
             <tr>
-                <th style="text-align:left;">Name</th>
-                <th style="text-align:left;">Client Code</th>
-                <th style="text-align:center;">No. of Linked Contacts</th>
-                <th style="text-align:center;">Actions</th>
+                <th>Name</th>
+                <th>Client Code</th>
+                <th>No. of Linked Contacts</th>
+                <th>Actions</th>
             </tr>
         </thead>
         <tbody>
         {% for client in clients %}
             <tr>
-                <td style="text-align:left;">{{ client.name }}</td>
-                <td style="text-align:left;">{{ client.client_code }}</td>
-                <td style="text-align:center;">{{ client.contacts|length }}</td>
-                <td style="text-align:center;">
+                <td>{{ client.name }}</td>
+                <td>{{ client.client_code }}</td>
+                <td>{{ client.contacts|length }}</td>
+                <td>
                     <a href="{{ url_for('client.view_client', client_id=client.id) }}" class="btn btn-sm btn-info">View</a>
                 </td>
             </tr>
@@ -30,4 +36,23 @@
         <div class="alert alert-warning mt-4">No client(s) found</div>
     {% endif %}
 </div>
+
+<!-- Client-side search script -->
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    const searchInput = document.getElementById("clientSearch");
+    const table = document.getElementById("clientsTable");
+    if (!searchInput || !table) return;
+
+    const rows = table.getElementsByTagName("tr");
+
+    searchInput.addEventListener("keyup", function() {
+        const filter = searchInput.value.toLowerCase();
+        for (let i = 1; i < rows.length; i++) { // skip header row
+            let rowText = rows[i].textContent.toLowerCase();
+            rows[i].style.display = rowText.includes(filter) ? "" : "none";
+        }
+    });
+});
+</script>
 {% endblock %}

@@ -1,27 +1,43 @@
 {% extends 'base.html' %}
 {% block content %}
 <div class="container">
+    <!-- Search contacts by name -->
+    <div class="row mb-4">
+        <div class="col-12 col-md-8">
+            <form id="contact-search-form" class="d-flex">
+                <input type="text" id="contactSearch" name="contact_name" class="form-control me-2" placeholder="Search contact by name...">
+                <button type="submit" class="btn btn-primary">Search</button>
+            </form>
+            <div id="contact-search-error" class="text-danger mt-2" style="display:none;">No Contact Found</div>
+        </div>
+    </div>
+
     <h2>Contact: {{ contact.name }} {{ contact.surname }}</h2>
     <p><b>Email:</b> {{ contact.email }}</p>
     <hr style="margin: 24px 0;">
 
     <h3>Linked Clients</h3>
     {% if clients and clients|length > 0 %}
-    <table class="table table-bordered">
+    <table class="table custom-compact-table" id="linkedClientsTable">
         <thead>
             <tr>
-                <th style="text-align:left;">Client Name</th>
-                <th style="text-align:left;">Client Code</th>
+                <th>Client Name</th>
+                <th>Client Code</th>
                 <th style="text-align:center;">Action</th>
             </tr>
         </thead>
         <tbody>
         {% for client in clients %}
         <tr id="client-row-{{ client.id }}">
-            <td style="text-align:left;">{{ client.name }}</td>
-            <td style="text-align:left;">{{ client.client_code }}</td>
+            <td>{{ client.name }}</td>
+            <td>{{ client.client_code }}</td>
             <td style="text-align:center;">
-                <button class="btn btn-danger btn-sm unlink-btn" data-client-id="{{ client.id }}">Unlink</button>
+                <button 
+                    class="btn btn-danger btn-sm unlink-btn" 
+                    data-client-id="{{ client.id }}" 
+                    data-url="{{ url_for('client.unlink_contact', client_id=client.id) }}">
+                    Unlink
+                </button>
             </td>
         </tr>
         {% endfor %}
@@ -34,30 +50,67 @@
     <hr style="margin: 24px 0;">
 
     <h3>Link to Client</h3>
-    <form id="link-client-form" class="form-inline" style="margin-bottom:16px;">
+    <form id="link-client-form" class="form-inline mb-3">
         <select name="client_id" id="client_id" class="form-select" style="width:auto; display:inline-block;">
             <option value="">-- Select Client --</option>
             {% if available_clients and available_clients|length > 0 %}
                 {% for client in available_clients %}
                     <option value="{{ client.id }}">{{ client.name }} ({{ client.client_code }})</option>
                 {% endfor %}
-            {% else %}
-                <!-- No clients available to link, dropdown stays with only the placeholder -->
             {% endif %}
         </select>
-        <button type="submit" class="btn btn-success">Link</button>
+        <button type="submit" class="btn btn-success ms-2">Link</button>
     </form>
 </div>
+{% endblock %}
+
+{% block scripts %}
 <script>
 $(function() {
-    // Unlink client AJAX
-    $('.unlink-btn').click(function() {
-        var cid = $(this).data('client-id');
-        $.post('{{ url_for("contact.unlink_client", contact_id=contact.id) }}', {client_id: cid}, function(resp) {
+    // Contact search by name
+    $('#contact-search-form').submit(function(e) {
+        e.preventDefault();
+        var contactName = $('#contactSearch').val().trim();
+        $('#contact-search-error').hide();
+        if(contactName) {
+            $.ajax({
+                url: "{{ url_for('contact.search_contact') }}",
+                method: "GET",
+                data: {name: contactName},
+                success: function(resp) {
+                    if (resp.found && resp.contact_id) {
+                        // Redirect to the found contact's detail page
+                        var baseUrl = "{{ url_for('contact.view_contact', contact_id=0) }}";
+                        // Remove trailing "0" and append the real contact_id
+                        if (baseUrl.endsWith("0")) {
+                            baseUrl = baseUrl.slice(0, -1);
+                        }
+                        window.location = baseUrl + resp.contact_id;
+                    } else {
+                        $('#contact-search-error').show();
+                    }
+                },
+                error: function() {
+                    $('#contact-search-error').show();
+                }
+            });
+        }
+    });
+
+    // Unlink client AJAX (delegated)
+    $(document).on('click', '.unlink-btn', function(e) {
+        e.preventDefault();
+        var btn = $(this);
+        var client_id = btn.data('client-id');
+        var url = btn.data('url');
+        $.post(url, {client_id: client_id}, function(resp) {
             if (resp.success)
-                $('#client-row-' + cid).remove();
+                $('#client-row-' + client_id).fadeOut(300, function() { $(this).remove(); });
+            else
+                alert(resp.message || "Error unlinking client.");
         });
     });
+
     // Link client AJAX
     $('#link-client-form').submit(function(e) {
         e.preventDefault();
@@ -65,6 +118,7 @@ $(function() {
         if(client_id) {
             $.post('{{ url_for("contact.link_client", contact_id=contact.id) }}', {client_id: client_id}, function(resp) {
                 if(resp.success) location.reload();
+                else alert(resp.message || "Error linking client.");
             });
         }
     });
